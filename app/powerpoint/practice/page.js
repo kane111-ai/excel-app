@@ -6,6 +6,7 @@ export const metadata = { title: 'PowerPointトレーニング | Office Master' 
 
 const TABS = [
   { href: '/powerpoint/practice', label: '練習問題' },
+  { href: '/powerpoint/project', label: '実践演習' },
   { href: '/powerpoint/learn', label: '学習タブ' },
 ];
 
