@@ -34,7 +34,7 @@ export default function Quiz({ shortcuts, featureCategories }) {
   const [wrongIds, setWrongIds] = useState(new Set());
   const [loaded, setLoaded] = useState(false);
 
-  const [mode, setMode] = useState('mc');
+  const [mode, setMode] = useState('mc'); // 'mc' = 四択, 'flash' = 一問一答
   const [reviewMode, setReviewMode] = useState(false);
   const [started, setStarted] = useState(false);
   const [order, setOrder] = useState([]);

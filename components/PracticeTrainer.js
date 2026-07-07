@@ -131,6 +131,51 @@ export default function PracticeTrainer({ categories, questions, storageKey, app
 
           <p className="text-steel-800 leading-relaxed mb-4">{q.text}</p>
 
+          {q.sample && q.sample.values && (
+            <div className="mb-4 overflow-x-auto">
+              <p className="text-xs text-steel-400 mb-1">{q.sample.label}</p>
+              <table className="text-sm border-collapse">
+                <tbody>
+                  <tr>
+                    {q.sample.values.map((v, i) => (
+                      <td key={i} className="border border-steel-200 px-3 py-1.5 font-mono text-steel-700 text-right">
+                        {v}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {q.sample && q.sample.table && (
+            <div className="mb-4 overflow-x-auto">
+              <p className="text-xs text-steel-400 mb-1">{q.sample.label}</p>
+              <table className="text-sm border-collapse">
+                <thead>
+                  <tr>
+                    {q.sample.table.columns.map((c) => (
+                      <th key={c} className="border border-steel-200 px-3 py-1.5 bg-steel-50 text-steel-600 font-medium">
+                        {c}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {q.sample.table.rows.map((row, ri) => (
+                    <tr key={ri}>
+                      {row.map((cell, ci) => (
+                        <td key={ci} className="border border-steel-200 px-3 py-1.5 font-mono text-steel-700 text-right">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
           {showHint && (
             <div className="text-sm bg-steel-50 text-steel-600 rounded-md px-3 py-2 mb-4 font-mono">
               {q.hint}

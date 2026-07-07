@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Quiz from '@/components/Quiz';
+
 // shortcuts: [{keys, desc}], featureCategories: [{name, functions:[{name,desc,example}]}], techniques: [{title, body}]
 export default function ReferenceSection({ shortcuts, featureCategories, techniques, featureTabLabel }) {
   const [tab, setTab] = useState('shortcuts');
@@ -70,7 +71,7 @@ export default function ReferenceSection({ shortcuts, featureCategories, techniq
             </div>
           ))}
         </div>
-     )}
+      )}
 
       {tab === 'quiz' && <Quiz shortcuts={shortcuts} featureCategories={featureCategories} />}
     </div>
