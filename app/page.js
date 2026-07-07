@@ -13,12 +13,12 @@ const CARDS = [
   {
     href: '/powerpoint/practice',
     title: 'PowerPoint',
-    desc: 'スライド作成・デザイン・アニメーション・発表テクニックのお題。',
+    desc: 'スライド作成・デザイン・アニメーションのお題、決算説明会スライドの実践演習、学習タブ。',
   },
   {
     href: '/word/practice',
     title: 'Word',
-    desc: '文書作成・校閲・レイアウト・差し込み印刷のお題。',
+    desc: '文書作成・校閲・レイアウトのお題、決算報告書の実践演習、学習タブ。',
   },
 ];
 
