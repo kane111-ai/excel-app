@@ -6,6 +6,7 @@ export const metadata = { title: 'Word学習タブ | Office Master' };
 
 const TABS = [
   { href: '/word/practice', label: '練習問題' },
+  { href: '/word/project', label: '実践演習' },
   { href: '/word/learn', label: '学習タブ' },
 ];
 
