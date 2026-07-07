@@ -1,12 +1,23 @@
-# Excel Master
+# Office Master
 
-社会人になるまでにExcelを実践形式で鍛えるトレーニングアプリです。Next.js（App Router）+ Tailwind CSSで構築し、Gemini APIをサーバーサイド経由で利用します。
+社会人になるまでにExcel・PowerPoint・Wordを実践形式で鍛えるトレーニングアプリです。Next.js（App Router）+ Tailwind CSSで構築し、Gemini APIをサーバーサイド経由で利用します。
 
 ## 機能
 
-- **関数トレーニング**: 関数・グラフ・書式・ピボット・ショートカット・データ整理の6カテゴリ、100問以上のお題（テンプレートから自動生成、数字はランダム）
+### Excel
+- **関数トレーニング**: 関数・グラフ・書式・ピボット・ショートカット・データ整理の6カテゴリ、100問以上のお題
 - **財務諸表分析**: 架空企業3期分のPL/BS/CFを使った指標計算の演習（自己採点機能つき）
 - **学習タブ**: ショートカットキー一覧・関数の種類一覧・基本テクニックのリファレンス
+
+### PowerPoint
+- **練習問題**: スライド作成・デザイン・アニメーション・ショートカット・発表テクニックのお題
+- **学習タブ**: ショートカット・機能一覧・基本テクニック
+
+### Word
+- **練習問題**: 文書作成・書式、校閲・共同編集、レイアウト・目次、ショートカット、差し込み印刷のお題
+- **学習タブ**: ショートカット・機能一覧・基本テクニック
+
+### 共通
 - **Gemini連携**: 自分の回答をAIに添削してもらう／指標の意味をAIに解説してもらう機能（任意）
 
 進捗はブラウザのlocalStorageに保存され、サーバーには送信されません。
@@ -89,21 +100,35 @@ git push -u origin main
 ```
 excel-master/
   app/
-    page.js                    ホーム
-    excel/functions/page.js    関数トレーニング
-    excel/finance/page.js      財務諸表分析
-    excel/learn/page.js        学習タブ
-    api/gemini/check/route.js  AI添削API
-    api/gemini/hint/route.js   AI解説API
-  components/                  UIコンポーネント
+    page.js                       ホーム
+    excel/functions/page.js       Excel: 関数トレーニング
+    excel/finance/page.js         Excel: 財務諸表分析
+    excel/learn/page.js           Excel: 学習タブ
+    powerpoint/practice/page.js   PowerPoint: 練習問題
+    powerpoint/learn/page.js      PowerPoint: 学習タブ
+    word/practice/page.js         Word: 練習問題
+    word/learn/page.js            Word: 学習タブ
+    api/gemini/check/route.js     AI添削API
+    api/gemini/hint/route.js      AI解説API
+  components/
+    Nav.js                 上部の共通ナビゲーション（ホーム/Excel/PowerPoint/Word）
+    AppTabs.js             アプリ内のサブタブ（練習問題/学習タブ など）
+    PracticeTrainer.js     練習問題の共通UI（Excel/PowerPoint/Word共通）
+    ReferenceSection.js    学習タブの共通UI（Excel/PowerPoint/Word共通）
+    FinanceWorkbook.js     財務諸表分析専用UI
   data/
-    questions.js                お題データ（自動生成ロジック含む）
-    financeData.js               財務データ・演習問題
-    learnContent.js               ショートカット・関数一覧・基本テクニック
+    questions.js            Excelのお題データ（自動生成ロジック含む）
+    financeData.js           財務データ・演習問題
+    learnContent.js           Excelのショートカット・関数一覧・基本テクニック
+    pptQuestions.js            PowerPointのお題データ
+    pptLearnContent.js          PowerPointのショートカット・機能一覧・基本テクニック
+    wordQuestions.js             Wordのお題データ
+    wordLearnContent.js           Wordのショートカット・機能一覧・基本テクニック
 ```
 
 ## お題やデータのカスタマイズ
 
-- `data/questions.js` の各 `gen〇〇Questions` 関数を編集すると、お題のテンプレートや生成数を増減できます。
+- `data/questions.js` / `data/pptQuestions.js` / `data/wordQuestions.js` の各 `gen〇〇Questions` 関数を編集すると、お題のテンプレートや生成数を増減できます。
 - `data/financeData.js` の数値を変更すると、財務諸表の内容を差し替えられます（すべて架空の数値です）。
-- `data/learnContent.js` にショートカットや関数を追加すると、学習タブに反映されます。
+- `data/learnContent.js` / `data/pptLearnContent.js` / `data/wordLearnContent.js` にショートカットや機能を追加すると、各アプリの学習タブに反映されます。
+- 新しいアプリ（例: Outlook）を追加したい場合は、`data/xxxQuestions.js` と `data/xxxLearnContent.js` を用意し、`app/xxx/practice/page.js` と `app/xxx/learn/page.js` を既存のPowerPoint/Wordのページをコピーして作るのが簡単です。
