@@ -1,33 +1,38 @@
 import Link from 'next/link';
-import { QUESTIONS, CATEGORIES } from '@/data/questions';
+import { QUESTIONS as EXCEL_QUESTIONS, CATEGORIES as EXCEL_CATEGORIES } from '@/data/questions';
 import { FINANCE_EXERCISES } from '@/data/financeData';
+import { PPT_QUESTIONS } from '@/data/pptQuestions';
+import { WORD_QUESTIONS } from '@/data/wordQuestions';
 
 const CARDS = [
   {
     href: '/excel/functions',
-    title: '関数トレーニング',
-    desc: 'カテゴリ別のお題に挑戦して、関数・グラフ・書式・ピボットなどを実践形式でマスターする。',
+    title: 'Excel',
+    desc: '関数・グラフ・書式・ピボットなどのお題、財務諸表分析、学習タブ。',
   },
   {
-    href: '/excel/finance',
-    title: '財務諸表分析',
-    desc: '仮想企業の損益計算書・貸借対照表・キャッシュフロー計算書を使って、実務に近い分析を練習する。',
+    href: '/powerpoint/practice',
+    title: 'PowerPoint',
+    desc: 'スライド作成・デザイン・アニメーション・発表テクニックのお題。',
   },
   {
-    href: '/excel/learn',
-    title: '学習タブ',
-    desc: 'ショートカットキー・関数の種類・基本テクニックをリファレンス形式でいつでも確認できる。',
+    href: '/word/practice',
+    title: 'Word',
+    desc: '文書作成・校閲・レイアウト・差し込み印刷のお題。',
   },
 ];
 
 export default function Home() {
+  const totalQuestions = EXCEL_QUESTIONS.length + PPT_QUESTIONS.length + WORD_QUESTIONS.length;
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-steel-800 mb-2">Excel Master</h1>
+        <h1 className="text-2xl font-semibold text-steel-800 mb-2">Office Master</h1>
         <p className="text-steel-500">
-          社会人になるまでに、Excelを実践形式で鍛えるトレーニングアプリ。お題は{QUESTIONS.length}問、
-          カテゴリは{CATEGORIES.length}種類、財務分析演習は{FINANCE_EXERCISES.length}問を用意しています。
+          社会人になるまでに、Excel・PowerPoint・Wordを実践形式で鍛えるトレーニングアプリ。
+          お題は合計{totalQuestions}問（Excel {EXCEL_QUESTIONS.length}問 / PowerPoint {PPT_QUESTIONS.length}問 / Word {WORD_QUESTIONS.length}問）、
+          財務分析演習は{FINANCE_EXERCISES.length}問を用意しています。
         </p>
       </div>
 
