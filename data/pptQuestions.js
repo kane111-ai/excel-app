@@ -1,3 +1,5 @@
+import { COMPANY_NAME } from './financeData';
+
 function mulberry32(seed) {
   let a = seed;
   return function () {
@@ -26,33 +28,48 @@ function nextId() {
   return `p${idCounter.toString().padStart(4, '0')}`;
 }
 
+const AGENDA_SETS = [
+  ['背景・課題', '提案内容', '導入スケジュール', '期待効果'],
+  ['当四半期の実績', '主要施策の進捗', '来期に向けた課題', 'まとめ'],
+];
+
 function genSlideBasics(rng) {
   const out = [];
-  for (let i = 0; i < 5; i++) {
-    const topic = pick(TOPICS, rng);
+  const topic1 = pick(TOPICS, rng);
+  let topic2 = pick(TOPICS, rng);
+  while (topic2 === topic1) topic2 = pick(TOPICS, rng);
+  const dept = pick(DEPTS, rng);
+
+  out.push({
+    id: nextId(),
+    category: 'スライド作成',
+    level: 1,
+    text: `${COMPANY_NAME}の「${topic1}」というタイトルのタイトルスライドを作成せよ。サブタイトルには発表日（2026年7月8日）と発表部署（${dept}）を入れること`,
+    hint: 'ホーム → 新しいスライド → タイトルスライドのレイアウトを選択',
+  });
+  out.push({
+    id: nextId(),
+    category: 'スライド作成',
+    level: 1,
+    text: `${COMPANY_NAME}の「${topic2}」というタイトルのタイトルスライドを、デザイナー機能を使って装飾して作成せよ`,
+    hint: 'デザイン → デザイナー（Designer）でおすすめレイアウトを選択',
+  });
+
+  AGENDA_SETS.forEach((items) => {
     out.push({
       id: nextId(),
       category: 'スライド作成',
       level: 1,
-      text: `「${topic}」というタイトルのタイトルスライドを作成し、サブタイトルに発表日と部署名を入れよ`,
-      hint: 'ホーム → 新しいスライド → タイトルスライドのレイアウトを選択',
-    });
-  }
-  for (let i = 0; i < 4; i++) {
-    const n = randInt(rng, 3, 6);
-    out.push({
-      id: nextId(),
-      category: 'スライド作成',
-      level: 1,
-      text: `アジェンダスライドを作成し、箇条書きで${n}項目の見出しを入れよ`,
+      text: `アジェンダスライドを作成し、以下の${items.length}項目をそのまま箇条書きで入力せよ：${items.join('／')}`,
       hint: 'ホーム → 新しいスライド → タイトルとコンテンツ',
     });
-  }
+  });
+
   out.push({
     id: nextId(),
     category: 'スライド作成',
     level: 2,
-    text: 'アウトラインモードを使って、複数スライドの見出しを一気に入力せよ',
+    text: 'アウトラインモードを使って、次の4つの見出しを一気に入力せよ：①背景 ②現状分析 ③提案内容 ④まとめ',
     hint: '表示 → アウトライン表示',
   });
   out.push({
@@ -88,34 +105,33 @@ function genDesignQuestions(rng) {
     text: 'スライドマスターを編集し、全スライド共通のフッターに会社名を入れよ',
     hint: '表示 → スライドマスター → フッターを編集',
   });
-  const dept = pick(DEPTS, rng);
   out.push({
     id: nextId(),
     category: 'デザイン・レイアウト',
     level: 2,
-    text: `${dept}のロゴ画像をすべてのスライドの右下に統一して配置せよ`,
-    hint: 'スライドマスターに画像を挿入すると全スライドに反映される',
+    text: `「${COMPANY_NAME}」というテキストボックスを作成し、すべてのスライドの右下に統一して配置せよ`,
+    hint: 'スライドマスターにテキストボックスを挿入すると全スライドに反映される',
   });
   out.push({
     id: nextId(),
     category: 'デザイン・レイアウト',
     level: 2,
-    text: 'SmartArtを使って、業務フローを図解せよ',
+    text: '「受注 → 製造 → 検査 → 出荷」の4ステップの業務フローをSmartArtで図解せよ',
     hint: '挿入 → SmartArt → 手順',
   });
   out.push({
     id: nextId(),
     category: 'デザイン・レイアウト',
     level: 2,
-    text: '複数の図形を「配置」機能で均等に整列させよ',
+    text: '四角形の図形を3つ作成し、「配置」機能で均等に整列させよ',
     hint: '図形を選択 → 図形の書式 → 配置 → 上下中央揃え／左右に整列',
   });
   out.push({
     id: nextId(),
     category: 'デザイン・レイアウト',
     level: 3,
-    text: 'グラフを挿入し、Excelのデータとリンクさせて自動更新できるようにせよ',
-    hint: '挿入 → グラフ、またはExcelからコピーして「貼り付けのオプション」でリンク貼り付け',
+    text: 'Excelの練習用ファイル「グラフ用」シートの月別売上データをコピーし、リンク貼り付けでスライドにグラフとして挿入せよ（Excel側の数値を変えると自動更新される状態にする）',
+    hint: 'Excelでグラフをコピー → PowerPointで「貼り付けのオプション」→ リンク（元の書式を保持 & ブックをリンク）',
   });
   return out;
 }
