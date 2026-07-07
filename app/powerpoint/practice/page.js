@@ -1,5 +1,6 @@
 import PracticeTrainer from '@/components/PracticeTrainer';
 import AppTabs from '@/components/AppTabs';
+import DownloadBanner from '@/components/DownloadBanner';
 import { PPT_CATEGORIES, PPT_QUESTIONS } from '@/data/pptQuestions';
 
 export const metadata = { title: 'PowerPointトレーニング | Office Master' };
@@ -15,9 +16,10 @@ export default function PptPracticePage() {
     <div>
       <h1 className="text-xl font-semibold text-steel-800 mb-1">PowerPoint</h1>
       <AppTabs links={TABS} />
-      <p className="text-steel-500 text-sm mb-6">
-        スライド作成・デザイン・アニメーションなどのお題に挑戦しよう。
+      <p className="text-steel-500 text-sm mb-4">
+        スライド作成・デザイン・アニメーションなどのお題に挑戦しよう。「デザイン・レイアウト」の一部はExcelの練習用ファイルを使います。
       </p>
+      <DownloadBanner label="Excel練習用ファイル" />
       <PracticeTrainer
         categories={PPT_CATEGORIES}
         questions={PPT_QUESTIONS}
