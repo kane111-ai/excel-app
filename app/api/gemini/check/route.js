@@ -10,9 +10,10 @@ export async function POST(request) {
   }
 
   try {
-    const { question, userAnswer, hint } = await request.json();
+    const { question, userAnswer, hint, appLabel } = await request.json();
+    const app = appLabel || 'Office';
 
-    const prompt = `あなたはExcel学習アプリの採点アシスタントです。以下のお題に対するユーザーの回答（Excelの数式や操作の説明）を採点してください。
+    const prompt = `あなたは${app}学習アプリの採点アシスタントです。以下のお題に対するユーザーの回答（${app}の操作や数式の説明）を採点してください。
 
 お題: ${question}
 模範解答の例（参考程度、表記ゆれは許容）: ${hint}
