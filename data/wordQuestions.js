@@ -17,7 +17,6 @@ function randInt(rng, min, max) {
   return Math.floor(rng() * (max - min + 1)) + min;
 }
 
-const DOC_TYPES = ['議事録', '報告書', '稟議書', '提案書', '始末書', '案内状', '仕様書'];
 const DEPTS = ['営業部', '製造部', '技術部', '品質保証部', '総務部'];
 
 let idCounter = 0;
@@ -28,16 +27,20 @@ function nextId() {
 
 function genFormatQuestions(rng) {
   const out = [];
-  for (let i = 0; i < 4; i++) {
-    const doc = pick(DOC_TYPES, rng);
-    out.push({
-      id: nextId(),
-      category: '文書作成・書式',
-      level: 1,
-      text: `「${doc}」というタイトルの文書を作成し、見出し1・見出し2のスタイルを使って章立てせよ`,
-      hint: 'ホーム → スタイル → 見出し1／見出し2を適用',
-    });
-  }
+  out.push({
+    id: nextId(),
+    category: '文書作成・書式',
+    level: 1,
+    text: '「議事録」というタイトルの文書を作成し、見出し1・見出し2のスタイルを使って「1. 会議概要／2. 決定事項／3. 今後のアクション」の章立てをせよ',
+    hint: 'ホーム → スタイル → 見出し1／見出し2を適用',
+  });
+  out.push({
+    id: nextId(),
+    category: '文書作成・書式',
+    level: 1,
+    text: '「改善提案書」というタイトルの文書を作成し、見出し1・見出し2のスタイルを使って「1. 現状分析／2. 改善提案／3. 期待効果」の章立てをせよ',
+    hint: 'ホーム → スタイル → 見出し1／見出し2を適用',
+  });
   out.push({
     id: nextId(),
     category: '文書作成・書式',
@@ -49,21 +52,21 @@ function genFormatQuestions(rng) {
     id: nextId(),
     category: '文書作成・書式',
     level: 2,
-    text: '段落番号と箇条書きを使い分けて、手順書のリストを作成せよ',
-    hint: 'ホーム → 段落番号 / 箇条書き',
+    text: '「①材料を用意する ②型に流し込む ③24時間乾燥させる ④仕上げ加工を行う」という4手順を、段落番号を使ったリストで作成せよ',
+    hint: 'ホーム → 段落番号',
   });
   out.push({
     id: nextId(),
     category: '文書作成・書式',
     level: 2,
-    text: 'タブとリーダー線を使って、見積書のような「項目名 ……… 金額」の形式を作成せよ',
+    text: 'タブとリーダー線を使って、次の見積項目を「項目名 ……… 金額」の形式で3行作成せよ：材料費 120,000円／加工費 45,000円／運送費 18,000円',
     hint: 'ホーム → 段落 → タブとリーダー',
   });
   out.push({
     id: nextId(),
     category: '文書作成・書式',
     level: 2,
-    text: '表を挿入し、セルの結合・分割を使って複雑なレイアウトの申請書を作成せよ',
+    text: '表を挿入し、氏名・部署・申請日・申請内容・承認欄の5項目からなる申請書を、セルの結合を使いながら作成せよ',
     hint: '挿入 → 表、表ツール → レイアウト → セルの結合／分割',
   });
   out.push({
@@ -176,8 +179,8 @@ function genAutomationQuestions(rng) {
     id: nextId(),
     category: '差し込み印刷・自動化',
     level: 2,
-    text: 'Excelの取引先リストを使って、宛名だけが違う案内状を差し込み印刷で作成せよ',
-    hint: '差し込み文書 → 差し込み印刷の開始 → 宛先の選択',
+    text: 'Excelの練習用ファイル「データ整理用」シートの取引先リスト（会社名・担当者氏名）を差し込みデータとして使い、宛名だけが違う案内状をWordの差し込み印刷で作成せよ',
+    hint: '差し込み文書 → 差し込み印刷の開始 → 宛先の選択 → 既存のリストを使用（Excelファイルを指定）',
   });
   out.push({
     id: nextId(),
