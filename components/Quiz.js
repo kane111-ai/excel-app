@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -24,12 +25,17 @@ function buildPool(shortcuts, featureCategories) {
   return pool;
 }
 
-const QUIZ_LENGTH = 10;
-
 export default function Quiz({ shortcuts, featureCategories }) {
+  const pathname = usePathname();
+  const storageKey = `office-master:wrong:${pathname}`;
+
   const pool = useMemo(() => buildPool(shortcuts, featureCategories), [shortcuts, featureCategories]);
 
+  const [wrongIds, setWrongIds] = useState(new Set());
+  const [loaded, setLoaded] = useState(false);
+
   const [mode, setMode] = useState('mc');
+  const [reviewMode, setReviewMode] = useState(false);
   const [started, setStarted] = useState(false);
   const [order, setOrder] = useState([]);
   const [index, setIndex] = useState(0);
@@ -42,10 +48,38 @@ export default function Quiz({ shortcuts, featureCategories }) {
 
   const current = order[index];
 
-  const startQuiz = (chosenMode) => {
-    const length = Math.min(QUIZ_LENGTH, pool.length);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) setWrongIds(new Set(JSON.parse(raw)));
+    } catch (e) {
+      /* noop */
+    }
+    setLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  const persistWrong = (next) => {
+    setWrongIds(next);
+    try {
+      localStorage.setItem(storageKey, JSON.stringify([...next]));
+    } catch (e) {
+      /* noop */
+    }
+  };
+
+  const recordResult = (id, isCorrect) => {
+    const next = new Set(wrongIds);
+    if (isCorrect) next.delete(id);
+    else next.add(id);
+    persistWrong(next);
+  };
+
+  const startQuiz = (chosenMode, reviewOnly = false) => {
+    const source = reviewOnly ? pool.filter((p) => wrongIds.has(p.id)) : pool;
     setMode(chosenMode);
-    setOrder(shuffle(pool).slice(0, length));
+    setReviewMode(reviewOnly);
+    setOrder(shuffle(source));
     setIndex(0);
     setCorrectCount(0);
     setAnsweredCount(0);
@@ -82,34 +116,69 @@ export default function Quiz({ shortcuts, featureCategories }) {
     if (selected) return;
     setSelected(opt);
     setAnsweredCount((c) => c + 1);
-    if (opt === current.answer) setCorrectCount((c) => c + 1);
+    const isCorrect = opt === current.answer;
+    if (isCorrect) setCorrectCount((c) => c + 1);
+    recordResult(current.id, isCorrect);
   };
 
   const markFlash = (know) => {
     setAnsweredCount((c) => c + 1);
     if (know) setCorrectCount((c) => c + 1);
+    recordResult(current.id, know);
     goNext();
   };
 
   if (!started) {
+    const weakCount = wrongIds.size;
     return (
-      <div className="card p-5 text-center">
-        <p className="text-sm text-steel-600 mb-4">
-          ショートカット・機能の説明から出題します（全{pool.length}問からランダムに{Math.min(QUIZ_LENGTH, pool.length)}問）。
-        </p>
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => startQuiz('mc')}
-            className="px-4 py-2 text-sm rounded-md bg-steel-800 text-white"
-          >
-            四択テストを始める
-          </button>
-          <button
-            onClick={() => startQuiz('flash')}
-            className="px-4 py-2 text-sm rounded-md border border-steel-200 hover:bg-steel-50 text-steel-700"
-          >
-            一問一答を始める
-          </button>
+      <div>
+        <div className="card p-5 text-center mb-4">
+          <p className="text-sm text-steel-600 mb-4">全{pool.length}問から出題します。</p>
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={() => startQuiz('mc')}
+              className="px-4 py-2 text-sm rounded-md bg-steel-800 text-white"
+            >
+              四択テストを始める
+            </button>
+            <button
+              onClick={() => startQuiz('flash')}
+              className="px-4 py-2 text-sm rounded-md border border-steel-200 hover:bg-steel-50 text-steel-700"
+            >
+              一問一答を始める
+            </button>
+          </div>
+        </div>
+
+        <div className="card p-5">
+          <h3 className="text-sm font-semibold text-steel-800 mb-1">苦手問題</h3>
+          {!loaded ? (
+            <p className="text-sm text-steel-400">読み込み中...</p>
+          ) : weakCount > 0 ? (
+            <>
+              <p className="text-sm text-steel-600 mb-4">
+                これまでのテストで間違えた問題が{weakCount}問あります。
+              </p>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => startQuiz('mc', true)}
+                  className="px-4 py-2 text-sm rounded-md bg-amberline text-white"
+                >
+                  四択で復習する
+                </button>
+                <button
+                  onClick={() => startQuiz('flash', true)}
+                  className="px-4 py-2 text-sm rounded-md border border-steel-200 hover:bg-steel-50 text-steel-700"
+                >
+                  一問一答で復習する
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-steel-500">
+              まだ苦手な問題はありません。テストで間違えると自動的にここに追加されます。
+            </p>
+          )}
         </div>
       </div>
     );
@@ -119,13 +188,13 @@ export default function Quiz({ shortcuts, featureCategories }) {
     const pct = answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0;
     return (
       <div className="card p-6 text-center">
-        <p className="text-sm text-steel-500 mb-1">結果</p>
+        <p className="text-sm text-steel-500 mb-1">{reviewMode ? '苦手問題の復習結果' : '結果'}</p>
         <p className="text-2xl font-semibold text-steel-800 mb-4">
           {correctCount} / {answeredCount} 正解（{pct}%）
         </p>
         <div className="flex justify-center gap-2">
           <button
-            onClick={() => startQuiz(mode)}
+            onClick={() => startQuiz(mode, reviewMode)}
             className="px-4 py-2 text-sm rounded-md bg-steel-800 text-white"
           >
             もう一度同じ形式で
@@ -144,7 +213,10 @@ export default function Quiz({ shortcuts, featureCategories }) {
   return (
     <div>
       <div className="flex items-center justify-between text-xs text-steel-400 mb-3">
-        <span>{mode === 'mc' ? '四択テスト' : '一問一答'}</span>
+        <span>
+          {reviewMode ? '苦手問題の復習・' : ''}
+          {mode === 'mc' ? '四択テスト' : '一問一答'}
+        </span>
         <span>
           {index + 1} / {order.length}（正解 {correctCount}）
         </span>
