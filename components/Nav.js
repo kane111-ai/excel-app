@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const LINKS = [
-  { href: '/', label: 'ホーム' },
-  { href: '/excel/functions', label: '関数トレーニング' },
-  { href: '/excel/finance', label: '財務諸表分析' },
-  { href: '/excel/learn', label: '学習タブ' },
+  { href: '/', label: 'ホーム', match: (p) => p === '/' },
+  { href: '/excel/functions', label: 'Excel', match: (p) => p.startsWith('/excel') },
+  { href: '/powerpoint/practice', label: 'PowerPoint', match: (p) => p.startsWith('/powerpoint') },
+  { href: '/word/practice', label: 'Word', match: (p) => p.startsWith('/word') },
 ];
 
 export default function Nav() {
@@ -18,11 +18,11 @@ export default function Nav() {
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 bg-amberline rounded-sm inline-block" />
-          <span className="font-semibold text-steel-800 tracking-tight">Excel Master</span>
+          <span className="font-semibold text-steel-800 tracking-tight">Office Master</span>
         </Link>
         <nav className="flex gap-1">
           {LINKS.map((l) => {
-            const active = pathname === l.href;
+            const active = l.match(pathname);
             return (
               <Link
                 key={l.href}
