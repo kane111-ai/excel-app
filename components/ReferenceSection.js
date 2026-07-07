@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
+import Quiz from '@/components/Quiz';
 // shortcuts: [{keys, desc}], featureCategories: [{name, functions:[{name,desc,example}]}], techniques: [{title, body}]
 export default function ReferenceSection({ shortcuts, featureCategories, techniques, featureTabLabel }) {
   const [tab, setTab] = useState('shortcuts');
@@ -13,6 +13,7 @@ export default function ReferenceSection({ shortcuts, featureCategories, techniq
           { key: 'shortcuts', label: 'ショートカット' },
           { key: 'functions', label: featureTabLabel || '機能の種類' },
           { key: 'basics', label: '基本テクニック' },
+          { key: 'quiz', label: 'テスト' },
         ].map((t) => (
           <button
             key={t.key}
@@ -69,7 +70,9 @@ export default function ReferenceSection({ shortcuts, featureCategories, techniq
             </div>
           ))}
         </div>
-      )}
+     )}
+
+      {tab === 'quiz' && <Quiz shortcuts={shortcuts} featureCategories={featureCategories} />}
     </div>
   );
 }
