@@ -30,121 +30,151 @@ function nextId() {
   return `q${idCounter.toString().padStart(4, '0')}`;
 }
 
+function randFloat(rng, min, max, decimals) {
+  const v = rng() * (max - min) + min;
+  return Number(v.toFixed(decimals));
+}
+
 function genFunctionQuestions(rng) {
   const out = [];
 
-  // SUM系
-  for (let i = 0; i < 6; i++) {
-    const colStart = randInt(rng, 1, 5);
-    const colEnd = colStart + randInt(rng, 5, 15);
+  // SUM系（実データつき・3問）
+  for (let i = 0; i < 3; i++) {
     const dept = pick(DEPTS, rng);
+    const n = randInt(rng, 6, 9);
+    const values = Array.from({ length: n }, () => randInt(rng, 40, 280));
+    const sum = values.reduce((a, b) => a + b, 0);
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 1,
-      text: `${dept}の売上データ（B${colStart}:B${colEnd}）の合計をSUM関数で求めよ`,
-      hint: `=SUM(B${colStart}:B${colEnd})`,
+      text: `${dept}の売上データ（下の表、単位:百万円）をExcelに入力し、SUM関数で合計を求めよ`,
+      sample: { label: `${dept}の売上データ（百万円）`, values },
+      hint: `=SUM(範囲) で合計を求める。 正解: ${sum.toLocaleString()}`,
     });
   }
 
-  // AVERAGE系
-  for (let i = 0; i < 5; i++) {
-    const r1 = randInt(rng, 2, 10);
-    const r2 = r1 + randInt(rng, 5, 20);
+  // AVERAGE系（実データつき・3問）
+  for (let i = 0; i < 3; i++) {
     const product = pick(PRODUCTS, rng);
+    const n = randInt(rng, 5, 8);
+    const values = Array.from({ length: n }, () => randInt(rng, 50, 300));
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 1,
-      text: `「${product}」の月別出荷量（C${r1}:C${r2}）の平均をAVERAGE関数で求めよ`,
-      hint: `=AVERAGE(C${r1}:C${r2})`,
+      text: `「${product}」の月別出荷量（下の表、単位:トン）をExcelに入力し、AVERAGE関数で平均を求めよ`,
+      sample: { label: `${product}の出荷量（トン）`, values },
+      hint: `=AVERAGE(範囲) で平均を求める。 正解: ${avg.toFixed(1)}`,
     });
   }
 
-  // ROUND系
+  // ROUND系（実データつき・3問）
+  for (let i = 0; i < 3; i++) {
+    const digits = randInt(rng, 0, 2);
+    const raw = randFloat(rng, 10, 999, 4);
+    const rounded = Number(raw.toFixed(digits));
+    out.push({
+      id: nextId(),
+      category: '関数・数式',
+      level: 1,
+      text: `数値「${raw}」をセルに入力し、小数点第${digits}位までに四捨五入せよ`,
+      hint: `=ROUND(セル, ${digits}) で四捨五入する。 正解: ${rounded}`,
+    });
+  }
+
+  // IF系（実データつき・4問）
   for (let i = 0; i < 4; i++) {
-    const digits = randInt(rng, 0, 3);
-    const cell = `D${randInt(rng, 2, 30)}`;
-    out.push({
-      id: nextId(),
-      category: '関数・数式',
-      level: 1,
-      text: `セル${cell}の数値を小数点第${digits}位までに四捨五入せよ`,
-      hint: `=ROUND(${cell}, ${digits})`,
-    });
-  }
-
-  // IF系
-  for (let i = 0; i < 6; i++) {
     const threshold = randInt(rng, 60, 95);
-    const cell = `E${randInt(rng, 2, 40)}`;
+    const score = randInt(rng, 40, 100);
+    const judged = score >= threshold ? '達成' : '未達';
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 2,
-      text: `${cell}の値が${threshold}以上なら「達成」、未満なら「未達」と表示するIF関数を作成せよ`,
-      hint: `=IF(${cell}>=${threshold},"達成","未達")`,
+      text: `点数「${score}」をセルに入力し、${threshold}以上なら「達成」、未満なら「未達」と表示するIF関数を作成せよ`,
+      hint: `=IF(セル>=${threshold},"達成","未達") 正解: 「${judged}」`,
     });
   }
 
-  // VLOOKUP系
-  for (let i = 0; i < 4; i++) {
+  // COUNTIF系（実データつき・3問）
+  for (let i = 0; i < 3; i++) {
+    const target = pick(CITIES, rng);
+    const n = 10;
+    const values = Array.from({ length: n }, () => pick(CITIES, rng));
+    // targetが最低2件は含まれるように調整
+    values[0] = target;
+    values[randInt(rng, 1, n - 1)] = target;
+    const count = values.filter((v) => v === target).length;
+    out.push({
+      id: nextId(),
+      category: '関数・数式',
+      level: 2,
+      text: `取引先の所在地一覧（下の表）をExcelに入力し、「${target}」の件数をCOUNTIF関数で数えよ`,
+      sample: { label: '取引先の所在地一覧', values },
+      hint: `=COUNTIF(範囲,"${target}") 正解: ${count}件`,
+    });
+  }
+
+  // SUMIFS系（実データつき・3問）
+  for (let i = 0; i < 3; i++) {
+    const targetDept = pick(DEPTS, rng);
+    const n = 6;
+    const rows = Array.from({ length: n }, () => ({
+      dept: pick(DEPTS, rng),
+      amount: randInt(rng, 30, 200),
+    }));
+    rows[0].dept = targetDept;
+    rows[Math.min(3, n - 1)].dept = targetDept;
+    const sum = rows.filter((r) => r.dept === targetDept).reduce((s, r) => s + r.amount, 0);
+    out.push({
+      id: nextId(),
+      category: '関数・数式',
+      level: 3,
+      text: `部署別売上データ（下の表、単位:百万円）をExcelに入力し、部署が「${targetDept}」の合計をSUMIFS関数で求めよ`,
+      sample: {
+        label: '部署別売上データ',
+        table: { columns: ['部署', '売上（百万円）'], rows: rows.map((r) => [r.dept, r.amount]) },
+      },
+      hint: `=SUMIFS(売上列, 部署列,"${targetDept}") 正解: ${sum}`,
+    });
+  }
+
+  // VLOOKUP系（概念問題・2問）
+  for (let i = 0; i < 2; i++) {
     const target = pick(['商品コード', '社員番号', '取引先コード', '製品ID'], rng);
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 2,
-      text: `${target}をキーにVLOOKUP関数で対応する名称を検索して表示せよ`,
+      text: `${target}をキーにVLOOKUP関数で対応する名称を検索して表示せよ（自分でコード表と名称表を2列用意して試そう）`,
       hint: `=VLOOKUP(検索値, 範囲, 列番号, FALSE)`,
     });
   }
 
-  // COUNTIF系
-  for (let i = 0; i < 5; i++) {
-    const city = pick(CITIES, rng);
-    out.push({
-      id: nextId(),
-      category: '関数・数式',
-      level: 2,
-      text: `取引先リストの中で所在地が「${city}」の件数をCOUNTIF関数で数えよ`,
-      hint: `=COUNTIF(範囲,"${city}")`,
-    });
-  }
-
-  // SUMIF / SUMIFS系
-  for (let i = 0; i < 5; i++) {
-    const dept = pick(DEPTS, rng);
-    const amount = randInt(rng, 50, 500) * 10000;
-    out.push({
-      id: nextId(),
-      category: '関数・数式',
-      level: 3,
-      text: `部署が「${dept}」かつ売上が${amount.toLocaleString()}円以上の合計をSUMIFS関数で求めよ`,
-      hint: `=SUMIFS(合計範囲, 部署列,"${dept}", 売上列,">="&${amount})`,
-    });
-  }
-
-  // INDEX/MATCH系
-  for (let i = 0; i < 3; i++) {
+  // INDEX/MATCH系（概念問題・2問）
+  for (let i = 0; i < 2; i++) {
     const name = pick(NAMES, rng);
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 3,
-      text: `氏名「${name}」からINDEX/MATCH関数を組み合わせて所属部署を逆引きせよ`,
+      text: `氏名「${name}」からINDEX/MATCH関数を組み合わせて所属部署を逆引きせよ（自分で氏名と部署の一覧表を用意して試そう）`,
       hint: `=INDEX(部署列, MATCH("${name}", 氏名列, 0))`,
     });
   }
 
-  // 文字列関数
-  for (let i = 0; i < 4; i++) {
-    const cell = `F${randInt(rng, 2, 20)}`;
+  // 文字列関数（実データつき・2問）
+  for (let i = 0; i < 2; i++) {
+    const word = pick(['東北製鋼株式会社', '営業部第一課', '品質保証システム', '設備投資計画書'], rng);
+    const n = randInt(rng, 2, 4);
     out.push({
       id: nextId(),
       category: '関数・数式',
       level: 2,
-      text: `${cell}の文字列の先頭3文字だけをLEFT関数で取り出せ`,
-      hint: `=LEFT(${cell}, 3)`,
+      text: `文字列「${word}」をセルに入力し、先頭${n}文字だけをLEFT関数で取り出せ`,
+      hint: `=LEFT(セル, ${n}) 正解: 「${word.slice(0, n)}」`,
     });
   }
 
