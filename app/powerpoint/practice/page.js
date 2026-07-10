@@ -17,9 +17,17 @@ export default function PptPracticePage() {
       <h1 className="text-xl font-semibold text-steel-800 mb-1">PowerPoint</h1>
       <AppTabs links={TABS} />
       <p className="text-steel-500 text-sm mb-4">
-        スライド作成・デザイン・アニメーションなどのお題に挑戦しよう。「デザイン・レイアウト」の一部はExcelの練習用ファイルを使います。
+        スライド作成・デザイン・アニメーションなどのお題に挑戦しよう。「デザイン・レイアウト」の一部は下の練習用ファイルを使います。
       </p>
-      <DownloadBanner label="Excel練習用ファイル" />
+      <DownloadBanner
+        href="/downloads/ppt-practice-material.pptx"
+        label="PowerPoint練習用ファイル"
+        description="SmartArt変換・図形整列・テキストボックスの素材が入っています"
+      />
+      <DownloadBanner
+        label="Excel練習用ファイル"
+        description="グラフをリンク貼り付けする問題で使います"
+      />
       <PracticeTrainer
         categories={PPT_CATEGORIES}
         questions={PPT_QUESTIONS}
@@ -29,3 +37,4 @@ export default function PptPracticePage() {
     </div>
   );
 }
+
